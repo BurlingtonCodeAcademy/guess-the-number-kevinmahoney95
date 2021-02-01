@@ -12,10 +12,7 @@ let YorN = 0;
 let HorL = 0;
 let max = 100;
 let min = 1;
-// beginning min and max, to be changed within function, as well as initially assigning variables for guess, YorN, and HorL, which decided if while loop runs
-
-// function to guess a number between the max and min
-// must figure out how to get variables to reassign inside if else
+let howManyTries = 0;
 
 start();
 
@@ -24,7 +21,7 @@ async function start() {
     "Let's play a game where you (human) pick a number and I (computer) try to guess it.\n"
   );
   let max = await ask(
-    "What do you want the maximum number to be? I will guess numbers between this number and 1."
+    "What do you want the maximum number to be? I will guess numbers between this number and 1. "
   );
   console.log("You entered: " + max);
   let secretNumber = await ask(
@@ -33,23 +30,33 @@ async function start() {
   console.log("You entered: " + secretNumber);
   console.log("I will now begin to guess your number. \n");
   while (YorN !== "Y") {
-    max = parseInt(max); // converts max input to an integer
+    howManyTries++;
+    max = parseInt(max);
 
     function guessNum(max, min) {
-      let guess = Math.floor((max + min) / 2); //function to return a smart guess b/t the min and max
+      let guess = Math.floor((max + min) / 2);
       return guess;
     }
     guess = guessNum(max, min);
 
-    // main while loop that runs as long as Y has not been returned
-    let YorN = await ask(`Is your number ${guess}? Y for Yes or N for No.\n `); //determines if loop will continue
-    // will be altered in if else
+    let YorN = await ask(`Is your number ${guess}? Y for Yes or N for No.\n`);
+
     if (YorN === "Y") {
-      console.log("My artificial intellect prevails!");
-      process.exit(); //end of game
+      console.log(
+        `My artificial intellect prevails! It took me ${howManyTries} tries to guess your number. `
+      );
+      let playAgain = await ask(
+        "Would you like to play again? If you do, type Y. If you don't, type N."
+      );
+      if (playAgain === "Y") {
+        console.log("Great!\n");
+        return start();
+      } else {
+        process.exit();
+      }
     } else {
       HorL = await ask(
-        "Is your number higher or lower than my guess? H for Higher or L for Lower. \n" //logs High or Low, dictates how range is adjusted
+        "Is your number higher or lower than my guess? H for Higher or L for Lower. \n"
       );
     }
     if (HorL === "H") {
@@ -58,6 +65,4 @@ async function start() {
       max = guess - 1;
     }
   }
-
-  process.exit();
 }
